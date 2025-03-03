@@ -6,12 +6,17 @@ import Aura from '@primeng/themes/aura';
 import { importProvidersFrom } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
+    provideHttpClient(withInterceptorsFromDi()),
     provideRouter(routes),
     provideAnimations(),
     providePrimeNG({

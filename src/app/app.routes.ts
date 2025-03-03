@@ -3,7 +3,7 @@ import { CategoriesComponent } from './pages/categories/categories.component';
 
 export const routes: Routes = [
   {
-    path: 'categories',
+    path: '',
     component: CategoriesComponent,
   },
 ];

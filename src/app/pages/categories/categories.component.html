@@ -1,20 +1,34 @@
-<!-- <p-table [value]="categories">
+<p-table
+  [value]="categories"
+  stripedRows
+  [paginator]="true"
+  [rows]="5"
+  [tableStyle]="{ 'min-width': '20rem' }"
+  [rowsPerPageOptions]="[5, 10, 20]"
+>
   <ng-template pTemplate="header">
     <tr>
-      <th>Category</th>
-      <th>Actions</th>
+      <th style="width: 100%">Categories List</th>
+      <th></th>
+      <th></th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-category>
     <tr>
-      <td>{{ category.name }}</td>
+      <td>{{ category.category }}</td>
       <td>
-        <button pButton label="Edit"></button>
-        <button pButton label="Delete" class="p-button-danger"></button>
+        <button pButton class="p-button">
+          <i class="pi pi-pencil"></i>
+        </button>
+      </td>
+      <td>
+        <button pButton class="p-button-danger">
+          <i class="pi pi-trash"></i>
+        </button>
       </td>
     </tr>
   </ng-template>
-</p-table> -->
+</p-table>
 
 <div class="card flex justify-center">
   <p-button label="Check" />
