@@ -47,10 +47,12 @@ export class CategoriesComponent {
   displayAddDialog: boolean = false;
   displayDeleteDialog: boolean = false;
   displayRestoreDialog: boolean = false;
+  displayEditDialog: boolean = false;
 
   // variables for crud apis
   newCategory: string = '';
   selectedCategory: any = null;
+  editedCategoryName: string = '';
 
   categories: any[] = [];
   loading: boolean = false;
@@ -98,10 +100,15 @@ export class CategoriesComponent {
               this.loadData(); // Optionally reload categories if needed
             },
             error: (error) => {
-              console.error('Error creating category:', error);
-              alert(
-                'There was an error creating the category. Please try again.'
-              );
+              this.loading = false;
+              if (error.status === 400 && error.error?.message) {
+                alert(error.error.message);
+              } else {
+                console.log(error);
+                alert(
+                  'There was an error creating the category. Please try again.'
+                );
+              }
             },
             complete: () => {
               this.loading = false; // Reset the loading state after the API call completes
@@ -125,6 +132,7 @@ export class CategoriesComponent {
   }
 
   onDeleteCategory() {
+    this.loading = true;
     if (this.selectedCategory) {
       this.categoryService
         .deleteCategory(this.selectedCategory)
@@ -139,6 +147,7 @@ export class CategoriesComponent {
             },
             complete: () => {
               console.log('Delete completed');
+              this.loading = false;
             },
           })
         )
@@ -158,6 +167,7 @@ export class CategoriesComponent {
   }
 
   onRestoreCategory() {
+    this.loading = true;
     if (this.selectedCategory) {
       this.categoryService
         .restoreCategory(this.selectedCategory)
@@ -166,13 +176,64 @@ export class CategoriesComponent {
             next: (response) => {
               console.log('Category restored: ', response);
               this.loadData(); // reload the table
+              this.onCloseRestoreDialog();
             },
             error: (err) => {
               console.log('Error in restore', err);
             },
+            complete: () => {
+              console.log('Restore complete');
+              this.loading = false;
+            },
           })
         )
         .subscribe();
+    }
+  }
+
+  onOpenEditDialog(category: any) {
+    this.selectedCategory = category;
+    this.editedCategoryName = category.category; // Pre-fill with the current category name
+    this.displayEditDialog = true;
+  }
+
+  onCloseEditDialog() {
+    this.displayEditDialog = false;
+  }
+
+  onSaveEditCategory() {
+    if (this.editedCategoryName.trim() && this.selectedCategory) {
+      this.loading = true;
+      this.categoryService
+        .updateCategory(this.selectedCategory.category, this.editedCategoryName)
+        .pipe(
+          tap({
+            next: (response) => {
+              console.log('Category updated:', response);
+              this.onCloseEditDialog(); // Close the dialog
+              this.editedCategoryName = ''; // Clear the input
+              this.loadData(); // Reload categories
+            },
+            error: (error) => {
+              this.loading = false;
+              if (error.status === 400 && error.error?.message) {
+                // Check if the error is the "New name is the same as the current name" message
+                alert(error.error.message); // Display the API error message
+              } else {
+                console.error('Error updating category:', error);
+                alert(
+                  'There was an error updating the category. Please try again.'
+                );
+              }
+            },
+            complete: () => {
+              this.loading = false; // Reset loading state
+            },
+          })
+        )
+        .subscribe();
+    } else {
+      alert('Please enter a valid category name!');
     }
   }
 }

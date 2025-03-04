@@ -7,13 +7,14 @@
   [rowsPerPageOptions]="[10, 20]"
 >
   <ng-template pTemplate="caption">
-    <div>
+    <div class="header-container">
       <p-button
-        label="Add Category"
+        label="New Category"
         icon="pi pi-plus"
         class=""
         (click)="onOpenAddDialog()"
       />
+      <span>Categories List</span>
     </div>
   </ng-template>
   <ng-template pTemplate="header">
@@ -31,7 +32,11 @@
       <td></td>
       <td style="display: flex; justify-content: space-around; gap: 10px">
         <!-- Edit Button -->
-        <button pButton severity="secondary">
+        <button
+          pButton
+          severity="secondary"
+          (click)="onOpenEditDialog(category)"
+        >
           <i class="pi pi-pencil"></i>
         </button>
 
@@ -116,7 +121,7 @@
   [style]="{ width: '300px' }"
 >
   <ng-template pTemplate="header">
-    <span>Archive the category "{{ selectedCategory }}"?</span>
+    <span>Archive the "{{ selectedCategory }}" category?</span>
   </ng-template>
   <ng-template pTemplate="content">
     <div class="footer-button-container">
@@ -132,6 +137,7 @@
         severity="danger"
         label="Archive"
         size="small"
+        [loading]="loading"
         icon="pi pi-check"
         (click)="onDeleteCategory()"
       />
@@ -162,8 +168,58 @@
         icon="pi pi-refresh"
         label="Restore"
         size="small"
+        [loading]="loading"
         (click)="onRestoreCategory()"
       ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="displayEditDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '300px' }"
+>
+  <ng-template pTemplate="header">
+    <div class="header-container">
+      <span>Edit Category</span>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <p-inputgroup>
+      <p-inputgroup-addon>
+        <i class="pi pi-tag"></i>
+      </p-inputgroup-addon>
+      <p-floatlabel variant="in">
+        <input
+          pInputText
+          id="editCategoryName"
+          [(ngModel)]="editedCategoryName"
+          autocomplete="off"
+        />
+        <label for="editCategoryName">Category Name</label>
+      </p-floatlabel>
+    </p-inputgroup>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="footer-button-container">
+      <p-button
+        size="small"
+        severity="contrast"
+        label="Close"
+        icon="pi pi-times"
+        (click)="onCloseEditDialog()"
+      />
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        size="small"
+        (click)="onSaveEditCategory()"
+        [loading]="loading"
+      />
     </div>
   </ng-template>
 </p-dialog>
