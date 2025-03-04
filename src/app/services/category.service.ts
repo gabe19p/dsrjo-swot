@@ -9,7 +9,7 @@ export class CategoryService {
   private baseUrl =
     'https://nodeappapis-aef6fgczecbggeec.japanwest-01.azurewebsites.net/api/swot/categories';
   private allCategoriesUrl =
-    'https://nodeappapis-aef6fgczecbggeec.japanwest-01.azurewebsites.net/api/swot/categories';
+    'https://nodeappapis-aef6fgczecbggeec.japanwest-01.azurewebsites.net/api/swot/all-categories';
 
   constructor(private http: HttpClient) {}
 
@@ -37,5 +37,9 @@ export class CategoryService {
 
   deleteCategory(category: string): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/${category}`);
+  }
+
+  restoreCategory(category: string): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}/${category}/restore`, {});
   }
 }
