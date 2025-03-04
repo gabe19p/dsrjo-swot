@@ -56,6 +56,7 @@ export class CategoriesComponent {
 
   categories: any[] = [];
   loading: boolean = false;
+  pageLoading: boolean = true;
 
   constructor(private categoryService: CategoryService) {}
 
@@ -65,10 +66,12 @@ export class CategoriesComponent {
 
   // populates the table
   loadData(): void {
+    this.pageLoading = true;
     this.categoryService.getAllCategories().subscribe(
       (data) => {
         this.categories = data.data;
         console.log(this.categories);
+        this.pageLoading = false;
       },
       (error) => {
         console.log('Error loading the data', error);
