@@ -1,35 +1,169 @@
 <p-table
+  #categoryTable
   [value]="categories"
-  stripedRows
   [paginator]="true"
-  [rows]="5"
+  [rows]="10"
   [tableStyle]="{ 'min-width': '20rem' }"
-  [rowsPerPageOptions]="[5, 10, 20]"
+  [rowsPerPageOptions]="[10, 20]"
 >
+  <ng-template pTemplate="caption">
+    <div>
+      <p-button
+        label="Add Category"
+        icon="pi pi-plus"
+        class=""
+        (click)="onOpenAddDialog()"
+      />
+    </div>
+  </ng-template>
   <ng-template pTemplate="header">
     <tr>
-      <th style="width: 100%">Categories List</th>
-      <th></th>
+      <th>Category</th>
+      <th>Status</th>
+      <th style="width: 100%"></th>
       <th></th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-category>
     <tr>
       <td>{{ category.category }}</td>
-      <td>
-        <button pButton class="p-button">
+      <td>{{ category.isArchived ? "Archived" : "Active " }}</td>
+      <td></td>
+      <td style="display: flex; justify-content: space-around; gap: 10px">
+        <!-- Edit Button -->
+        <button pButton severity="secondary">
           <i class="pi pi-pencil"></i>
         </button>
-      </td>
-      <td>
-        <button pButton class="p-button-danger">
+
+        <!-- Archive or Restore Button -->
+        <button
+          *ngIf="!category.isArchived"
+          pButton
+          severity="danger"
+          (click)="onOpenDeleteDialog(category.category)"
+        >
           <i class="pi pi-trash"></i>
+        </button>
+
+        <button
+          *ngIf="category.isArchived"
+          pButton
+          severity="primary"
+          (click)="onOpenRestoreDialog(category.category)"
+        >
+          <i class="pi pi-refresh"></i>
         </button>
       </td>
     </tr>
   </ng-template>
 </p-table>
 
-<div class="card flex justify-center">
-  <p-button label="Check" />
-</div>
+<!-- Add Category Dialog -->
+<p-dialog
+  [(visible)]="displayAddDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '300px' }"
+>
+  <ng-template pTemplate="header">
+    <div class="header-container">
+      <span>Add Category</span>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <p-inputgroup>
+      <p-inputgroup-addon>
+        <i class="pi pi-tag"></i>
+      </p-inputgroup-addon>
+      <p-floatlabel variant="in">
+        <input
+          pInputText
+          id="categoryName"
+          [(ngModel)]="newCategory"
+          autocomplete="off"
+        />
+        <label for="categoryName">Category Name</label>
+      </p-floatlabel>
+    </p-inputgroup>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="footer-button-container">
+      <p-button
+        size="small"
+        severity="contrast"
+        label="Close"
+        icon="pi pi-times"
+        (click)="onCloseAddDialog()"
+      />
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        size="small"
+        (click)="onSaveCategory()"
+        [loading]="loading"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Delete Category Dialog -->
+<p-dialog
+  [(visible)]="displayDeleteDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '300px' }"
+>
+  <ng-template pTemplate="header">
+    <span>Archive the category "{{ selectedCategory }}"?</span>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="footer-button-container">
+      <p-button
+        severity="contrast"
+        label="Close"
+        size="small"
+        icon="pi pi-times"
+        (click)="onCloseDeleteDialog()"
+      />
+
+      <p-button
+        severity="danger"
+        label="Archive"
+        size="small"
+        icon="pi pi-check"
+        (click)="onDeleteCategory()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Restore Category Dialog -->
+<p-dialog
+  [(visible)]="displayRestoreDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '300px' }"
+>
+  <ng-template pTemplate="header"
+    >Restore the "{{ selectedCategory }}" category?</ng-template
+  >
+  <ng-template pTemplate="footer">
+    <div class="footer-button-container">
+      <p-button
+        severity="contrast"
+        icon="pi pi-times"
+        label="Close"
+        size="small"
+        (click)="onCloseRestoreDialog()"
+      ></p-button>
+      <p-button
+        icon="pi pi-refresh"
+        label="Restore"
+        size="small"
+        (click)="onRestoreCategory()"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
