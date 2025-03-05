@@ -19,8 +19,12 @@ export class AppComponent {
   ngOnInit() {
     this.items = [
       { label: 'Dashboard', icon: 'pi pi-home', routerLink: ['/'] },
-      { label: 'SWOT Event', icon: 'pi pi-home', routerLink: ['/events'] },
-      { label: 'Categories', icon: 'pi pi-tags', routerLink: ['/categories'] },
+      { label: 'SWOT Events', icon: 'pi pi-home', routerLink: ['/events'] },
+      {
+        label: 'SWOT Categories',
+        icon: 'pi pi-tags',
+        routerLink: ['/categories'],
+      },
       { label: 'Profile', icon: 'pi pi-user', routerLink: ['/profile'] },
     ];
   }
