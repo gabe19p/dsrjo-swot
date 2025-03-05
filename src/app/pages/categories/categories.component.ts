@@ -7,8 +7,8 @@ import {
 } from '@angular/core';
 import { NgFor, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CategoryService } from '../../services/category.service';
 import { tap } from 'rxjs';
+import { CategoryService } from '../../services/category.service';
 // PrimeNg Imports
 import { DialogModule } from 'primeng/dialog';
 import { Table, TableModule } from 'primeng/table';
@@ -29,7 +29,6 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     ButtonModule,
     IconFieldModule,
     InputIconModule,
-    FormsModule,
     FormsModule,
     CommonModule,
     DialogModule,
