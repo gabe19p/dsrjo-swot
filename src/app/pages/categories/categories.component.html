@@ -39,30 +39,33 @@
           <!-- Edit Button -->
           <button
             pButton
+            text
+            rounded
+            icon="pi pi-pencil"
             severity="secondary"
             (click)="onOpenEditDialog(category)"
-          >
-            <i class="pi pi-pencil"></i>
-          </button>
+          ></button>
 
           <!-- Archive or Restore Button -->
           <button
             *ngIf="!category.isArchived"
             pButton
+            text
+            rounded
+            icon="pi pi-trash"
             severity="danger"
             (click)="onOpenDeleteDialog(category.category)"
-          >
-            <i class="pi pi-trash"></i>
-          </button>
+          ></button>
 
           <button
             *ngIf="category.isArchived"
             pButton
+            text
+            rounded
             severity="primary"
+            icon="pi pi-refresh"
             (click)="onOpenRestoreDialog(category.category)"
-          >
-            <i class="pi pi-refresh"></i>
-          </button>
+          ></button>
         </td>
       </tr>
     </ng-template>
@@ -144,14 +147,16 @@
         label="Archive"
         size="small"
         [loading]="loading"
-        icon="pi pi-check"
+        icon="pi pi-trash"
         (click)="onDeleteCategory()"
       />
     </div>
   </ng-template>
 </p-dialog>
 
-<!-- Restore Category Dialog -->
+<!--
+Restore Category Dialog
+-->
 <p-dialog
   [(visible)]="displayRestoreDialog"
   [modal]="true"
@@ -161,7 +166,7 @@
   <ng-template pTemplate="header"
     >Restore the "{{ selectedCategory }}" category?</ng-template
   >
-  <ng-template pTemplate="footer">
+  <ng-template pTemplate="content">
     <div class="footer-button-container">
       <p-button
         severity="contrast"
@@ -181,6 +186,9 @@
   </ng-template>
 </p-dialog>
 
+<!--
+dialog for edits
+-->
 <p-dialog
   [(visible)]="displayEditDialog"
   [modal]="true"
