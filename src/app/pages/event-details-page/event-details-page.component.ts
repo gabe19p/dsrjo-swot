@@ -1,11 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, NgModule } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { tap } from 'rxjs';
 import { EntriesService } from '../../services/entries.service';
 import { CategoryService } from '../../services/category.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 // primeng imports
 import { DialogModule } from 'primeng/dialog';
@@ -43,6 +44,7 @@ import { Slider, SliderModule } from 'primeng/slider';
     InputIcon,
     RadioButtonModule,
     SliderModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './event-details-page.component.html',
   styleUrl: './event-details-page.component.scss',
@@ -50,11 +52,12 @@ import { Slider, SliderModule } from 'primeng/slider';
 export class EventDetailsPageComponent implements OnInit {
   @ViewChild('dt1') dt1!: Table;
 
-  eventId!: string;
-  eventDetails: any;
-  editingRow: any = null;
-  displayAddSwotDialog: boolean = false;
-  loading: boolean = false;
+  testEntryForm!: FormGroup; // testing validation
+  swotEntryForm!: FormGroup;
+
+  eventId!: string; // variable to hold specific event
+  eventDetails: any; // variable to hold event's entries
+  loading: boolean = false; // boolean for the dialogs buttons (uses a spinner)
   swotEntry: any = {
     description: '',
     category: '',
@@ -63,30 +66,39 @@ export class EventDetailsPageComponent implements OnInit {
     score: 5,
     notes: '',
   };
-  types = [
-    { label: 'Strength', value: 'strength' },
-    { label: 'Weakness', value: 'weakness' },
-    { label: 'Opportunity', value: 'opportunity' },
-    { label: 'Threat', value: 'threat' },
-  ];
-  importanceLevels = [
-    { label: 'Low', value: 'low' },
-    { label: 'Medium', value: 'medium' },
-    { label: 'High', value: 'high' },
-  ];
+  selectedEntry: any = {};
   categories: { label: string; value: string }[] = [];
+
+  /**
+   * boolean variables for the dialog visibility
+   */
+  displayAddSwotDialog: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private entriesService: EntriesService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
     this.eventId = this.route.snapshot.paramMap.get('eventId')!;
     this.loadEventDetails();
     this.loadCategories();
+
+    this.testEntryForm = this.fb.group({
+      title: ['', Validators.required],
+    });
+
+    this.swotEntryForm = this.fb.group({
+      description: ['', Validators.required],
+      category: ['', Validators.required],
+      type: ['', Validators.required],
+      importance: ['', Validators.required],
+      score: ['', [Validators.required, Validators.min(1), Validators.max(10)]],
+      notes: ['', Validators.required],
+    });
   }
 
   onGlobalSearch(event: Event) {
@@ -143,55 +155,6 @@ export class EventDetailsPageComponent implements OnInit {
       .subscribe();
   }
 
-  onRowEditInit(entry: any) {
-    this.editingRow = { ...entry }; // Keep a copy of the original entry for cancel purposes
-    console.log('Editing entry:', entry);
-  }
-
-  onRowEditSave(entry: any) {
-    console.log('Saving entry:', entry);
-    this.entriesService
-      .updateEntry(entry._id, entry)
-      .pipe(
-        tap({
-          next: (response) => {
-            console.log('Updated entry', response);
-            this.loadEventDetails(); // Refresh the event details after saving
-          },
-          error: (error) => {
-            if (error.status === 404 && error.error?.message) {
-              alert(error.error.message);
-            } else {
-              console.log(error);
-              alert(
-                'There was an error creating the category. Please try again.'
-              );
-            }
-          },
-          complete: () => {
-            console.log('Completed!');
-          },
-        })
-      )
-      .subscribe();
-    this.editingRow = null; // Clear the editing state after saving
-  }
-
-  onRowEditCancel(entry: any, rowIndex: number) {
-    console.log('Cancel editing for row:', rowIndex);
-    // Revert the entry to its original state
-    const originalEntry = this.editingRow;
-    if (originalEntry) {
-      const index = this.eventDetails.findIndex(
-        (item: any) => item._id === entry._id
-      );
-      if (index !== -1) {
-        this.eventDetails[index] = { ...originalEntry }; // Revert changes
-      }
-    }
-    this.editingRow = null; // Clear the editing state
-  }
-
   onOpenAddDialog() {
     console.log('Add entry clicked');
     this.displayAddSwotDialog = true;
@@ -202,6 +165,39 @@ export class EventDetailsPageComponent implements OnInit {
   }
 
   onSaveSwotEntry() {
-    console.log('Saved!');
+    this.loading = true;
+    if (this.swotEntryForm.valid) {
+      this.entriesService
+        .createSwotEntry(this.eventId, this.swotEntryForm.value)
+        .pipe(
+          tap({
+            next: (response) => {
+              console.log('Swot entry submitted, ', response);
+              this.onCloseAddDialog();
+              this.loadEventDetails();
+            },
+            error: (error) => {
+              this.loading = false;
+              if (error.status === 400 && error.error?.message) {
+                alert(error.error.message);
+              } else {
+                console.log(error);
+                alert(
+                  'There was an error creating the category. Please try again.'
+                );
+              }
+            },
+            complete: () => {
+              this.loading = false;
+            },
+          })
+        )
+        .subscribe();
+    } else {
+      console.log('Form is invalid');
+      this.swotEntryForm.markAllAsTouched(); // highlight errors
+    }
   }
+
+  onSubmit() {}
 }

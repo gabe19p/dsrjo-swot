@@ -1,30 +1,31 @@
-/* Table styling */
-// .event-table {
-//   overflow-x: auto;
-//   max-height: 400px;
-//   overflow-y: auto;
-// }
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
 
-// .table-column {
-//   max-width: 150px;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-// }
+.footer-button-container {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  justify-content: flex-end;
+}
 
-// /* Full width for input fields */
-// .full-width {
-//   width: 100%;
-// }
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full screen */
+}
 
-// /* Specific column max width for smaller fields */
-// .table-column td:nth-child(1),
-// .table-column td:nth-child(2),
-// .table-column td:nth-child(3) {
-//   max-width: 150px;
-// }
+.custom-spinner {
+  width: 50px !important;
+  height: 50px !important;
+}
 
-// .table-column td:nth-child(4),
-// .table-column td:nth-child(5),
-// .table-column td:nth-child(6) {
-//   max-width: 100px;
-// }
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
