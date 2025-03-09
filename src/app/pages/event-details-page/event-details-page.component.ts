@@ -24,6 +24,7 @@ import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { Slider, SliderModule } from 'primeng/slider';
+import { EventsService } from '../../services/events.service';
 @Component({
   selector: 'app-event-details-page',
   standalone: true,
@@ -52,10 +53,10 @@ import { Slider, SliderModule } from 'primeng/slider';
 export class EventDetailsPageComponent implements OnInit {
   @ViewChild('dt1') dt1!: Table;
 
-  testEntryForm!: FormGroup; // testing validation
   swotEntryForm!: FormGroup;
 
   eventId!: string; // variable to hold specific event
+  eventTitle!: string;
   eventDetails: any; // variable to hold event's entries
   loading: boolean = false; // boolean for the dialogs buttons (uses a spinner)
   swotEntry: any = {
@@ -73,12 +74,14 @@ export class EventDetailsPageComponent implements OnInit {
    * boolean variables for the dialog visibility
    */
   displayAddSwotDialog: boolean = false;
+  displayDeleteSwotDialog: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private entriesService: EntriesService,
     private categoryService: CategoryService,
+    private eventsService: EventsService,
     private fb: FormBuilder
   ) {}
 
@@ -86,10 +89,7 @@ export class EventDetailsPageComponent implements OnInit {
     this.eventId = this.route.snapshot.paramMap.get('eventId')!;
     this.loadEventDetails();
     this.loadCategories();
-
-    this.testEntryForm = this.fb.group({
-      title: ['', Validators.required],
-    });
+    this.loadEventTitle();
 
     this.swotEntryForm = this.fb.group({
       description: ['', Validators.required],
@@ -106,6 +106,20 @@ export class EventDetailsPageComponent implements OnInit {
     this.dt1.filterGlobal(inputEvent.value, 'contains');
   }
 
+  loadEventTitle() {
+    this.eventsService
+      .getSwotEvent(this.eventId)
+      .pipe(
+        tap({
+          next: (response) => {
+            this.eventTitle = response.data.swotEventTitle;
+            console.log(`SWOT Title = ${this.eventTitle}`);
+          },
+        })
+      )
+      .subscribe();
+  }
+
   loadEventDetails() {
     this.http
       .get(
@@ -116,6 +130,7 @@ export class EventDetailsPageComponent implements OnInit {
           next: (response: any) => {
             if (response && response.httpCode === '200' && response.data) {
               this.eventDetails = response.data;
+              console.log(response.data);
             } else {
               console.error('Invalid response format:', response);
             }
@@ -199,5 +214,36 @@ export class EventDetailsPageComponent implements OnInit {
     }
   }
 
-  onSubmit() {}
+  onOpenDeleteDialog(entry: any) {
+    this.displayDeleteSwotDialog = true;
+    this.selectedEntry = entry; // put the data in a variable
+    console.log(this.selectedEntry);
+  }
+  onCloseDeleteDialog() {
+    this.displayDeleteSwotDialog = false;
+    this.selectedEntry = null;
+  }
+  onDeleteSwotEntry() {
+    this.loading = true;
+    this.entriesService
+      .archiveEntry(this.selectedEntry._id)
+      .pipe(
+        tap({
+          next: (response) => {
+            console.log('Entry archived', response);
+            this.onCloseDeleteDialog();
+            this.loadEventDetails();
+          },
+          error: (error) => {
+            console.log('Error archiving', error);
+            alert('There was an error archiving this item: ' + error);
+            this.loading = false;
+          },
+          complete: () => {
+            this.loading = false;
+          },
+        })
+      )
+      .subscribe();
+  }
 }

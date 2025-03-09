@@ -32,7 +32,7 @@
           placeholder="Global Search"
         />
       </p-iconfield>
-      <span>SWOT Entries</span>
+      <span>SWOT Entries for "{{ eventTitle }}"</span>
     </div>
   </ng-template>
 
@@ -79,6 +79,7 @@
           text
           rounded
           severity="danger"
+          (click)="onOpenDeleteDialog(entry)"
         >
           <!-- (click)="onDelete(entry, ri)" -->
         </button>
@@ -261,6 +262,38 @@
         [disabled]="swotEntryForm.invalid"
         (click)="onSaveSwotEntry()"
         [loading]="loading"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- delete entry dialog -->
+<p-dialog
+  [(visible)]="displayDeleteSwotDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '300px' }"
+>
+  <ng-template pTemplate="header">
+    <span>Would you like to archive this entry?</span>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <div class="footer-button-container">
+      <p-button
+        severity="contrast"
+        label="Cancel"
+        size="small"
+        icon="pi pi-times"
+        (click)="onCloseDeleteDialog()"
+      />
+      <p-button
+        [loading]="loading"
+        severity="danger"
+        label="Archive"
+        size="small"
+        icon="pi pi-trash"
+        (click)="onDeleteSwotEntry()"
       />
     </div>
   </ng-template>

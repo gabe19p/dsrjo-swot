@@ -14,4 +14,8 @@ export class EventsService {
   getActiveEvents(): Observable<any> {
     return this.http.get<any>(this.baseUrl);
   }
+
+  getSwotEvent(eventId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${eventId}`);
+  }
 }
