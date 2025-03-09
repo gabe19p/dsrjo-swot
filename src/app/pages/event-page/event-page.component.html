@@ -1,6 +1,12 @@
-<p>event-page works!</p>
-
 <p-table #eventTable [value]="events">
+  <ng-template pTemplate="caption">
+    <p-button
+      icon="pi pi-plus"
+      label="Add Event"
+      (click)="onOpenCreateSwotEvent()"
+    ></p-button>
+  </ng-template>
+
   <ng-template pTemplate="header">
     <tr>
       <th>Title</th>
@@ -14,3 +20,49 @@
     </tr>
   </ng-template>
 </p-table>
+
+<p-dialog
+  [(visible)]="displayAddSwotDialog"
+  [modal]="true"
+  [style]="{ width: '300px' }"
+  header="Add SWOT Event"
+>
+  <ng-template #content>
+    <form
+      [formGroup]="swotEventForm"
+      class="dialog-form"
+      (ngSubmit)="onCreateSwotEvent()"
+    >
+      <p-floatlabel variant="on">
+        <input
+          type="text"
+          pInputText
+          id="title"
+          formControlName="swotEventTitle"
+          name="title"
+          autocomplete="off"
+        />
+        <label for="title">Event Title</label>
+      </p-floatlabel>
+
+      <p-datepicker
+        [showIcon]="true"
+        appendTo="body"
+        size="small"
+        formControlName="swotEventDate"
+        [showButtonBar]="true"
+        [dateFormat]="'yy-mm-dd'"
+        [showTime]="false"
+      />
+
+      <p-button
+        type="submit"
+        size="small"
+        label="Save"
+        icon="pi pi-check"
+        [loading]="loading"
+        [disabled]="swotEventForm.invalid"
+      ></p-button>
+    </form>
+  </ng-template>
+</p-dialog>

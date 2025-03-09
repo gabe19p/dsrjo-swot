@@ -18,4 +18,8 @@ export class EventsService {
   getSwotEvent(eventId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/${eventId}`);
   }
+
+  createSwotEvent(event: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl, event);
+  }
 }
