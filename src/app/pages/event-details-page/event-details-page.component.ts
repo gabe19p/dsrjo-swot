@@ -24,7 +24,9 @@ import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { Slider, SliderModule } from 'primeng/slider';
+import { CardModule } from 'primeng/card';
 import { EventsService } from '../../services/events.service';
+
 @Component({
   selector: 'app-event-details-page',
   standalone: true,
@@ -46,6 +48,7 @@ import { EventsService } from '../../services/events.service';
     RadioButtonModule,
     SliderModule,
     ReactiveFormsModule,
+    CardModule,
   ],
   templateUrl: './event-details-page.component.html',
   styleUrl: './event-details-page.component.scss',
@@ -57,7 +60,7 @@ export class EventDetailsPageComponent implements OnInit {
 
   eventId!: string; // variable to hold specific event
   eventTitle!: string;
-  eventDetails: any; // variable to hold event's entries
+  eventDetails: any[] = []; // variable to hold event's entries
   loading: boolean = false; // boolean for the dialogs buttons (uses a spinner)
   swotEntry: any = {
     description: '',
@@ -75,6 +78,17 @@ export class EventDetailsPageComponent implements OnInit {
    */
   displayAddSwotDialog: boolean = false;
   displayDeleteSwotDialog: boolean = false;
+
+  /**
+   * dashboard code
+   */
+  strengths: any[] = [];
+  weaknesses: any[] = [];
+  opportunities: any[] = [];
+  threats: any[] = [];
+  // weaknesses: SwotEntry[] = [];
+  // opportunities: SwotEntry[] = [];
+  // threats: SwotEntry[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -130,7 +144,19 @@ export class EventDetailsPageComponent implements OnInit {
           next: (response: any) => {
             if (response && response.httpCode === '200' && response.data) {
               this.eventDetails = response.data;
-              console.log(response.data);
+              this.strengths = response.data.filter(
+                (res: any) => res.type === 'S'
+              );
+              this.weaknesses = response.data.filter(
+                (res: any) => res.type === 'W'
+              );
+
+              this.threats = response.data.filter(
+                (res: any) => res.type === 'T'
+              );
+              this.opportunities = response.data.filter(
+                (res: any) => res.type === 'O'
+              );
             } else {
               console.error('Invalid response format:', response);
             }

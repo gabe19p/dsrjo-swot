@@ -5,3 +5,11 @@ body {
     Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol";
 }
+
+.footer-button-container {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  justify-content: flex-end;
+  padding: 5px;
+}
