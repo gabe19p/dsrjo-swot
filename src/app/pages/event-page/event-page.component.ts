@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgFor, CommonModule } from '@angular/common';
 import { tap } from 'rxjs';
 import { Router } from '@angular/router';
@@ -44,6 +44,7 @@ import { EventsService } from '../../services/events.service';
   styleUrl: './event-page.component.scss',
 })
 export class EventPageComponent implements OnInit {
+  @ViewChild('eventTable') dt1!: Table;
   events: any[] = [];
   pageLoading: boolean = true;
   loading: boolean = false;
@@ -53,6 +54,11 @@ export class EventPageComponent implements OnInit {
    */
   swotEventForm!: FormGroup;
   displayAddSwotDialog: boolean = false;
+  /**
+   * DELETE SWOT Event
+   */
+  selectedEvent: string = '';
+  displayDeleteSwotDialog: boolean = false;
 
   constructor(
     private eventsService: EventsService,
@@ -66,6 +72,11 @@ export class EventPageComponent implements OnInit {
       swotEventTitle: ['', Validators.required],
       swotEventDate: ['', Validators.required],
     });
+  }
+
+  onGlobalSearch(event: Event) {
+    const inputEvent = event.target as HTMLInputElement; // Cast the target to HTMLInputElement
+    this.dt1.filterGlobal(inputEvent.value, 'contains');
   }
 
   loadEvents(): void {
@@ -135,6 +146,42 @@ export class EventPageComponent implements OnInit {
       console.log('Form is invalid');
       this.swotEventForm.markAllAsTouched();
     }
+  }
+
+  onOpenDeleteSwotEvent(eventId: string) {
+    this.selectedEvent = eventId;
+    this.displayDeleteSwotDialog = true;
+    console.log(this.selectedEvent);
+  }
+
+  onCloseDeleteSwotEvent() {
+    this.selectedEvent = '';
+    this.displayDeleteSwotDialog = false;
+  }
+
+  onDeleteSwotEvent() {
+    this.loading = true;
+    this.eventsService
+      .archiveSwotEvent(this.selectedEvent)
+      .pipe(
+        tap({
+          next: (response) => {
+            console.log('Successfully archived event. ', response);
+            this.loading = false;
+            this.loadEvents();
+            this.onCloseDeleteSwotEvent();
+          },
+          error: (error) => {
+            console.log('Error in delete: ', error);
+            alert('There was an error deleting this event');
+          },
+          complete: () => {
+            console.log('Completed SWOT delete.');
+            this.loading = false;
+          },
+        })
+      )
+      .subscribe();
   }
 
   formatDate(date: Date): string {

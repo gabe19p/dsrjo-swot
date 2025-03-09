@@ -1,26 +1,73 @@
-<p-table #eventTable [value]="events">
-  <ng-template pTemplate="caption">
-    <p-button
-      icon="pi pi-plus"
-      label="Add Event"
-      (click)="onOpenCreateSwotEvent()"
-    ></p-button>
+<p-table
+  #eventTable
+  [value]="events"
+  [paginator]="true"
+  [rows]="10"
+  [globalFilterFields]="['swotEventTitle']"
+  [tableStyle]="{ 'min-width': '40rem' }"
+  [rowsPerPageOptions]="[10, 20]"
+  [autoLayout]="true"
+>
+  <ng-template #caption>
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        justify-content: space-between;
+      "
+    >
+      <p-button
+        icon="pi pi-plus"
+        label="New Event"
+        (click)="onOpenCreateSwotEvent()"
+      ></p-button>
+      <p-iconfield iconPosition="left">
+        <p-inputicon>
+          <i class="pi pi-search"></i>
+        </p-inputicon>
+        <input
+          pInputText
+          size="large"
+          (input)="onGlobalSearch($event)"
+          placeholder="Global Search"
+          style="min-width: 20rem; width: 100%"
+        />
+      </p-iconfield>
+
+      <span>Events List</span>
+    </div>
   </ng-template>
 
-  <ng-template pTemplate="header">
+  <ng-template #header>
     <tr>
       <th>Title</th>
       <th>Date</th>
+      <th></th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-event>
-    <tr (click)="goToEventDetails(event._id)" style="cursor: pointer">
-      <td>{{ event.swotEventTitle }}</td>
-      <td>{{ event.swotEventDate }}</td>
+    <tr>
+      <td style="cursor: pointer" (click)="goToEventDetails(event._id)">
+        {{ event.swotEventTitle }}
+      </td>
+      <td style="cursor: pointer" (click)="goToEventDetails(event._id)">
+        {{ event.swotEventDate }}
+      </td>
+      <td style="display: flex; justify-content: flex-end">
+        <p-button
+          text
+          rounded
+          icon="pi pi-trash"
+          severity="danger"
+          (click)="onOpenDeleteSwotEvent(event._id)"
+        ></p-button>
+      </td>
     </tr>
   </ng-template>
 </p-table>
 
+<!-- add event -->
 <p-dialog
   [(visible)]="displayAddSwotDialog"
   [modal]="true"
@@ -64,5 +111,33 @@
         [disabled]="swotEventForm.invalid"
       ></p-button>
     </form>
+  </ng-template>
+</p-dialog>
+
+<!-- delete event -->
+<p-dialog
+  [(visible)]="displayDeleteSwotDialog"
+  [closable]="false"
+  [modal]="true"
+  [style]="{ width: '300px' }"
+>
+  <ng-template #header>Archive this event?</ng-template>
+  <ng-template #content>
+    <div class="footer-button-container">
+      <p-button
+        severity="contrast"
+        label="Cancel"
+        icon="pi pi-times"
+        size="small"
+        (click)="onCloseDeleteSwotEvent()"
+      ></p-button>
+      <p-button
+        severity="danger"
+        label="Archive"
+        icon="pi pi-trash"
+        size="small"
+        (click)="onDeleteSwotEvent()"
+      ></p-button>
+    </div>
   </ng-template>
 </p-dialog>

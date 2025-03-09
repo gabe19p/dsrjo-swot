@@ -22,4 +22,8 @@ export class EventsService {
   createSwotEvent(event: any): Observable<any> {
     return this.http.post<any>(this.baseUrl, event);
   }
+
+  archiveSwotEvent(eventId: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/${eventId}/archive`, {});
+  }
 }
